@@ -32,13 +32,16 @@ const (
 )
 
 type AddServiceInterface interface {
-	Add(base, diff int) int
+	Add(base int, diffs []int) int
 }
 
 type AddService struct{}
 
-func (s AddService) Add(base, diff int) int {
-	return base + diff
+func (s AddService) Add(base int, diffs []int) int {
+	for _, diff := range diffs {
+		base += diff
+	}
+	return base
 }
 
 func main() {

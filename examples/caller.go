@@ -7,11 +7,11 @@ import (
 )
 
 type FakeAddServiceProxy struct {
-	Add func(base, diff int) int
+	Add func(base int, diff []int) int
 }
 
 func main() {
-	c := client.NewConsumer([]service.Service{
+	c := client.NewCaller([]service.Service{
 		{
 			Uri:      "add-service",
 			Instance: &FakeAddServiceProxy{},
@@ -22,6 +22,6 @@ func main() {
 	if !ok {
 		return
 	}
-	sum := proxy.Add(1, 1)
+	sum := proxy.Add(1, []int{1})
 	fmt.Printf("1+1 = %d\n", sum)
 }
