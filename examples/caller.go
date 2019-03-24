@@ -7,7 +7,7 @@ import (
 )
 
 type FakeAddServiceProxy struct {
-	Add func(base, diff float64) float64
+	Add func(base, diff int) int
 }
 
 func main() {
@@ -23,5 +23,5 @@ func main() {
 		return
 	}
 	sum := proxy.Add(1, 1)
-	fmt.Printf("1+1 = %f\n", sum)
+	fmt.Printf("1+1 = %d\n", sum)
 }

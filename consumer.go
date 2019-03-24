@@ -2,6 +2,7 @@ package client
 
 import (
 	"encoding/json"
+	"fmt"
 	"nix/codec"
 	"nix/service"
 	"reflect"
@@ -44,11 +45,11 @@ func (c Consumer) makeRPCFunc(s service.Service) {
 		mName := pt.Field(i).Name
 		mType := m.Type()
 
-		f := func(service service.Service, method string) func(in []reflect.Value) []reflect.Value {
+		f := func(uri string, method string, mType reflect.Type) func(in []reflect.Value) []reflect.Value {
 			return func(in []reflect.Value) []reflect.Value {
-				return c.call(service, method, in)
+				return c.call(uri, method, mType, in)
 			}
-		}(s, mName)
+		}(s.Uri, mName, mType)
 
 		v := reflect.MakeFunc(mType, f)
 		m.Set(v)
@@ -56,9 +57,9 @@ func (c Consumer) makeRPCFunc(s service.Service) {
 }
 
 // 请求网络发起调用并返回
-func (c Consumer) call(service service.Service, method string, in []reflect.Value) []reflect.Value {
+func (c Consumer) call(uri string, method string, mType reflect.Type, in []reflect.Value) []reflect.Value {
 	// 1. 选取已连接到指定服务的 client
-	cli, err := c.clientManager.SelectClient(service.Uri)
+	cli, err := c.clientManager.SelectClient(uri)
 	if err != nil {
 		panic("call: select client: " + err.Error())
 	}
@@ -69,7 +70,7 @@ func (c Consumer) call(service service.Service, method string, in []reflect.Valu
 		args[i] = v.Interface()
 	}
 	cmd := codec.CmdReq{
-		ServiceUri: service.Uri,
+		ServiceUri: uri,
 		Method:     method,
 		Args:       args,
 	}
@@ -91,5 +92,10 @@ func (c Consumer) call(service service.Service, method string, in []reflect.Valu
 		panic("call: unmarshal failed:" + err.Error())
 	}
 
-	return []reflect.Value{reflect.ValueOf(callResp.Res)}
+	respV := reflect.ValueOf(callResp.Res)
+	if !respV.Type().ConvertibleTo(mType.Out(0)) {
+		panic(fmt.Sprintf("can't convert resp %+v to %+v", respV.Type(), mType.Out(0)))
+	}
+
+	return []reflect.Value{respV.Convert(mType.Out(0))}
 }

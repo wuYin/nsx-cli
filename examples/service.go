@@ -32,12 +32,12 @@ const (
 )
 
 type AddServiceInterface interface {
-	Add(base, diff float64) float64
+	Add(base, diff int) int
 }
 
 type AddService struct{}
 
-func (s AddService) Add(base, diff float64) float64 {
+func (s AddService) Add(base, diff int) int {
 	return base + diff
 }
 

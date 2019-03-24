@@ -2,7 +2,6 @@ package client
 
 import (
 	"fmt"
-	"net"
 	"nix/registry"
 	"time"
 	"tron"
@@ -41,25 +40,12 @@ func (m *NixClientManager) onReloadService(uri string, addr string) {
 		return
 	}
 	codec := NewClientCodec()
-	conf := tron.NewConfig(16*1024, 16*1024, 100, 100, 1000, 5*time.Second)
+	conf := tron.NewDefaultConf(1 * time.Minute)
 	client := tron.NewClient(conn, conf, codec, func(cli *tron.Client, p *tron.Packet) {
-		cli.NotifyReceived(p.Header.Seq, p.Data)
+		cli.NotifyReceived(p.Seq(), p.Data)
 	})
-	client.Run()
+	client.ReadWriteAndHandle()
 
 	g := tron.NewClientsGroup(uri, uri)
 	m.clientManager.Add(g, client)
-}
-
-// 连接
-func dial(addr string) (*net.TCPConn, error) {
-	rAddr, err := net.ResolveTCPAddr("tcp4", addr)
-	if err != nil {
-		return nil, err
-	}
-	conn, err := net.DialTCP("tcp4", nil, rAddr)
-	if err != nil {
-		return nil, err
-	}
-	return conn, nil
 }
