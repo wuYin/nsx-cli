@@ -2,11 +2,11 @@ package client
 
 import (
 	"fmt"
-	"nix/registry"
+	"nsx/registry"
 	"time"
 )
 
-type NixServiceLoader struct {
+type NsxServiceLoader struct {
 	uris     []string
 	uri2Addr map[string]string
 	registry registry.Registry
@@ -15,8 +15,8 @@ type NixServiceLoader struct {
 
 type OnReload func(uri string, addr string)
 
-func NewNixServiceLoader(uris []string, registry registry.Registry, onReload OnReload) *NixServiceLoader {
-	l := &NixServiceLoader{
+func NewNsxServiceLoader(uris []string, registry registry.Registry, onReload OnReload) *NsxServiceLoader {
+	l := &NsxServiceLoader{
 		uris:     uris,
 		uri2Addr: make(map[string]string),
 		registry: registry,
@@ -37,7 +37,7 @@ func NewNixServiceLoader(uris []string, registry registry.Registry, onReload OnR
 }
 
 // 刷新拉取最新的可用服务地址
-func (l *NixServiceLoader) RefreshAddr() {
+func (l *NsxServiceLoader) RefreshAddr() {
 	for _, uri := range l.uris {
 		addr := l.registry.GetService(uri)
 		if addr == "" {

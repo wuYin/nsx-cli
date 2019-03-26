@@ -2,8 +2,8 @@ package client
 
 import (
 	"encoding/json"
-	"nix/codec"
-	"nix/service"
+	"nsx/codec"
+	"nsx/service"
 	"reflect"
 	"time"
 	"tron"
@@ -11,7 +11,7 @@ import (
 
 type Caller struct {
 	uri2Service   map[string]service.Service
-	clientManager *NixClientManager
+	clientManager *NsxClientManager
 }
 
 func NewCaller(services []service.Service) *Caller {
@@ -22,7 +22,7 @@ func NewCaller(services []service.Service) *Caller {
 		c.uri2Service[s.Uri] = s
 		uris = append(uris, s.Uri)
 	}
-	c.clientManager = NewNixClientManager("localhost:8080", uris)
+	c.clientManager = NewNsxClientManager("localhost:8080", uris)
 
 	for _, s := range services {
 		c.makeRPCFunc(s)

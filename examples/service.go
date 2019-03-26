@@ -1,9 +1,9 @@
 package main
 
 import (
-	"nix/registry"
-	"nix/server"
-	"nix/service"
+	"nsx/registry"
+	"nsx/server"
+	"nsx/service"
 	"reflect"
 )
 
@@ -62,7 +62,7 @@ func main() {
 		},
 	}
 
-	server.NewNixServer("localhost:8080", services)
+	server.NewNsxServer("localhost:8080", services)
 	// fmt.Println(rs.service2Addr) // map[admin-service:localhost:8080 add-service:localhost:8080]
 	select {}
 }

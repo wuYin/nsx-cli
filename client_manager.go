@@ -2,38 +2,38 @@ package client
 
 import (
 	"fmt"
-	"nix/registry"
+	"nsx/registry"
 	"time"
 	"tron"
 )
 
-type NixClientManager struct {
+type NsxClientManager struct {
 	clientManager *tron.ClientsManager
-	loader        *NixServiceLoader
+	loader        *NsxServiceLoader
 }
 
 // 管理 uris 对应的 service 地址
-func NewNixClientManager(centerAddr string, uris []string) *NixClientManager {
+func NewNsxClientManager(centerAddr string, uris []string) *NsxClientManager {
 	clientManager := tron.NewClientsManager(tron.NewReconnectTaskManager(1*time.Second, 2))
 	register := registry.NewDefaultRegistry(centerAddr)
 
-	m := &NixClientManager{
+	m := &NsxClientManager{
 		clientManager: clientManager,
 	}
-	loader := NewNixServiceLoader(uris, register, m.onReloadService)
+	loader := NewNsxServiceLoader(uris, register, m.onReloadService)
 	m.loader = loader
 
 	return m
 }
 
-func (m *NixClientManager) SelectClient(uri string) (*tron.Client, error) {
+func (m *NsxClientManager) SelectClient(uri string) (*tron.Client, error) {
 	clients := m.clientManager.FindClients(uri, func(gid string, cli *tron.Client) bool {
 		return false // 全选
 	})
 	return clients[0], nil
 }
 
-func (m *NixClientManager) onReloadService(uri string, addr string) {
+func (m *NsxClientManager) onReloadService(uri string, addr string) {
 	conn, err := dial(addr)
 	if err != nil {
 		fmt.Printf("dial %s failed: %v\n", addr, err)
