@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"nix-cli"
-	"nix/service"
+	"nsx-cli"
+	"nsx/registry"
+	"nsx/service"
 )
 
 type FakeAddServiceProxy struct {
@@ -11,12 +12,8 @@ type FakeAddServiceProxy struct {
 }
 
 func main() {
-	c := client.NewCaller([]service.Service{
-		{
-			Uri:      "add-service",
-			Instance: &FakeAddServiceProxy{},
-		},
-	})
+	services := []service.Service{{Uri: "add-service", Instance: &FakeAddServiceProxy{}}}
+	c := client.NewCaller(registry.REG_ZK, []string{"127.0.0.1:2181"}, services)
 
 	proxy, ok := c.GetService("add-service").(*FakeAddServiceProxy)
 	if !ok {

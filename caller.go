@@ -14,7 +14,7 @@ type Caller struct {
 	clientManager *NsxClientManager
 }
 
-func NewCaller(services []service.Service) *Caller {
+func NewCaller(regType int, regServers []string, services []service.Service) *Caller {
 	c := &Caller{uri2Service: make(map[string]service.Service)}
 
 	var uris []string
@@ -22,7 +22,7 @@ func NewCaller(services []service.Service) *Caller {
 		c.uri2Service[s.Uri] = s
 		uris = append(uris, s.Uri)
 	}
-	c.clientManager = NewNsxClientManager("localhost:8080", uris)
+	c.clientManager = NewNsxClientManager(regType, regServers, uris)
 
 	for _, s := range services {
 		c.makeRPCFunc(s)
